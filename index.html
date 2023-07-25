@@ -1,0 +1,108 @@
+<style>
+    /* Modal styles */
+    #myModal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        max-width: 90%;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        z-index: 999;
+    }
+
+    #myModal h2 {
+        margin-top: 0;
+    }
+
+    #myModal p {
+        margin-bottom: 0;
+    }
+
+    /* Overlay background */
+    #modalOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 998;
+    }
+
+    /* Loading animation */
+    .loader {
+        border: 4px solid rgba(0, 0, 0, 0.3);
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        margin: 20px auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const button = document.getElementById('submitButton');
+        const inputField = document.getElementById('entityNameInput');
+
+        button.addEventListener('click', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const entityName = inputField.value;
+            const url = `https://wess88l088.execute-api.us-east-2.amazonaws.com/prod/csv?entityName=${encodeURIComponent(entityName)}`;
+
+            try {
+                // Show the loading spinner
+                const modalContent = document.createElement('div');
+                modalContent.innerHTML = `
+                    <div class="loader"></div>
+                    <h2>Loading...</h2>
+                `;
+
+                const modal = document.createElement('div');
+                modal.id = 'myModal';
+
+                const modalOverlay = document.createElement('div');
+                modalOverlay.id = 'modalOverlay';
+
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+                document.body.appendChild(modalOverlay);
+
+                modal.style.display = 'block';
+                modalOverlay.style.display = 'block';
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Create and display the modal with the returned data
+                modalContent.innerHTML = `
+                    <h2>Budget Amount:</h2>
+                    <p>${data.response}</p>
+                `;
+
+                // Close the modal when clicking outside the content
+                modalOverlay.addEventListener('click', function(event) {
+                    if (event.target === modalOverlay) {
+                        modal.style.display = 'none';
+                        modalOverlay.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                alert('An error occurred while fetching data.');
+            }
+        });
+    });
+</script>
