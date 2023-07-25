@@ -13,6 +13,8 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border-radius: 4px;
         z-index: 999;
+        text-align: center; /* Center the content */
+        font-family: sans-serif; /* Use a sans-serif font */
     }
 
     #myModal h2 {
@@ -21,6 +23,19 @@
 
     #myModal p {
         margin-bottom: 0;
+        text-align: center;
+    }
+    
+    #myModal .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    #myModal .close-button:hover {
+        color: #999; /* Change the color to your preferred hover color */
     }
 
     /* Overlay background */
@@ -60,13 +75,15 @@
         button.addEventListener('click', async function(event) {
             event.preventDefault(); // Prevent default form submission
 
-            const entityName = inputField.value;
+            let entityName = inputField.value;
+            entityName = entityName.toLowerCase().replace(/\s+/g, '');
             const url = `https://wess88l088.execute-api.us-east-2.amazonaws.com/prod/csv?entityName=${encodeURIComponent(entityName)}`;
 
             try {
                 // Show the loading spinner
                 const modalContent = document.createElement('div');
                 modalContent.innerHTML = `
+                    <span class="close-button">&times;</span>
                     <div class="loader"></div>
                     <h2>Loading...</h2>
                 `;
@@ -89,8 +106,9 @@
 
                 // Create and display the modal with the returned data
                 modalContent.innerHTML = `
+                    <span class="close-button">&times;</span>
                     <h2>Budget Amount:</h2>
-                    <p>${data.response}</p>
+                    <p>$ ${data.response}</p>
                 `;
 
                 // Close the modal when clicking outside the content
